@@ -24,7 +24,7 @@ public class BackButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         if (audioSource == null)
         {
-            Debug.LogError("AudioSource component is not assigned to the BackButton script.");
+            //Debug.LogError("AudioSource component is not assigned to the BackButton script.");
         }
 
         if (card != null)
@@ -37,7 +37,7 @@ public class BackButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         }
         else
         {
-            Debug.LogError("Card is not assigned to the BackButton script.");
+            //Debug.LogError("Card is not assigned to the BackButton script.");
         }
 
         // Activate the cardPanel if it's not already active

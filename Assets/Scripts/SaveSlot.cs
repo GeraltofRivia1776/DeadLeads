@@ -89,6 +89,15 @@ public class SaveSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            Vector3 playerPosition = player.transform.position;
+            // Rest of the code that uses playerPosition
+        }
+        else
+        {
+            Debug.LogError("Player object is not assigned.");
+        }
 
 
         // Find the PauseMenu script instance in the scene
@@ -152,10 +161,16 @@ public class SaveSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
 
     private void CaptureScreenshot()
+{
+    // Capture the screenshot
+    capturedScreenshot = ScreenCapture.CaptureScreenshotAsTexture();
+
+    // Check if the screenshot capture was successful
+    if (capturedScreenshot == null)
     {
-        // Capture the screenshot
-        capturedScreenshot = ScreenCapture.CaptureScreenshotAsTexture();
+        Debug.LogError("Failed to capture screenshot.");
     }
+}
 
 
     public void UpdateScreenshots(Texture2D screenshotTexture)
@@ -307,43 +322,49 @@ public class SaveSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         if (isEmpty)
         {
+            // Activate the screenshot UI
             screenShot.gameObject.SetActive(true);
+
+            // Generate the current date and time
             DateTime now = DateTime.Now;
             string currentDate = FormatDateTime(now); // Format the current date and time
             string formattedDateTime = FormatDateTimeForDisplay(now); // Format the current date and time for display
             string missionDescription = "Test Mission"; // Replace with your mission description
 
+            // Update UI elements with the generated data
             SetSaveData(currentDate, missionDescription);
 
-
-            // Call UpdateScreenshots with the captured screenshot texture
+            // Capture the screenshot using PauseMenu reference
             if (pauseMenu != null)
             {
                 capturedScreenshot = pauseMenu.GetCapturedScreenshot(); // Get the captured screenshot
-                UpdateScreenshots(capturedScreenshot);
+                UpdateScreenshots(capturedScreenshot); // Update the screenshot UI
             }
             else
             {
                 Debug.LogError("PauseMenu reference is not assigned.");
             }
 
+            // Play the save sound if available
             if (audioSource != null && saveSound != null)
             {
                 audioSource.PlayOneShot(saveSound);
             }
 
+            // Log the action
             Debug.Log("Clicked on empty save slot with current date and time: " + formattedDateTime);
 
-            // Pass the actual screenshot texture instead of null
+            // Save the game data
             GameData updatedGameData = new GameData(formattedDateTime, missionDescription, capturedScreenshot, player.transform.position);
-
-            SaveGameData(updatedGameData);
+            SaveGameData(updatedGameData); // Save the game data
         }
         else
         {
+            // If the save slot is not empty, show the overwrite confirmation panel
             ShowOverwriteConfirmationPanel();
         }
     }
+
 
     // Method to format the date and time
     private string FormatDateTime(DateTime dateTime)
@@ -463,4 +484,26 @@ public class SaveSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         overwriteConfirmationPanel.SetActive(false);
     }
+
+    public bool IsPopulated()
+    {
+        // Check if the save slot is populated
+        return !isEmpty; // Return true if populated, false if empty
+    }
+
+    public GameData GetSaveData()
+    {
+        // Retrieve the save data from the save slot
+        if (IsPopulated())
+        {
+            // If the save slot is populated, load the saved game data from file
+            return LoadGameData();
+        }
+        else
+        {
+            // If the save slot is empty, return null
+            return null;
+        }
+    }
+
 }

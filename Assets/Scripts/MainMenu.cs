@@ -465,7 +465,7 @@ public class MenuMenu : MonoBehaviour
         }
         else
         {
-            Debug.Log("AudioSource component is null. SwitchSound");
+            //Debug.Log("AudioSource component is null. SwitchSound");
         }
     }
 
